@@ -11852,14 +11852,14 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># TODO: Calculate number of students</span>
 <span class="n">n_students</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span>
 
 <span class="c1"># TODO: Calculate number of features</span>
-<span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">student_data</span><span class="p">))</span>
+<span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">student_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
 
 <span class="c1"># TODO: Calculate passing students</span>
 <span class="n">n_passed</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="p">[</span> <span class="n">student_data</span><span class="p">[</span><span class="s1">&#39;passed&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span> <span class="p">][[</span><span class="s1">&#39;passed&#39;</span><span class="p">]])</span>
@@ -11868,7 +11868,7 @@ div#notebook {
 <span class="n">n_failed</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="p">[</span> <span class="n">student_data</span><span class="p">[</span><span class="s1">&#39;passed&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span> <span class="p">][[</span><span class="s1">&#39;passed&#39;</span><span class="p">]])</span>
 
 <span class="c1"># TODO: Calculate graduation rate</span>
-<span class="n">grad_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_passed</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_students</span><span class="p">)</span>
+<span class="n">grad_rate</span> <span class="o">=</span> <span class="nb">float</span> <span class="p">(</span> <span class="n">n_passed</span> <span class="p">)</span><span class="o">/</span> <span class="n">n_students</span><span class="o">*</span><span class="mi">100</span>
 
 <span class="c1"># Print the results</span>
 <span class="k">print</span> <span class="s2">&quot;Total number of students: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_students</span><span class="p">)</span>
@@ -11889,10 +11889,10 @@ div#notebook {
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Total number of students: 395
-Number of features: 31
+Number of features: 30
 Number of students who passed: 265
 Number of students who failed: 130
-Graduation rate of the class: 0.67%
+Graduation rate of the class: 67.09%
 </pre>
 </div>
 </div>
@@ -12669,9 +12669,15 @@ Based on the table above we could see that the predictive performance of SVM is 
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong><br>
-First, the model learns how a student's performance indicators lead to whether a student will graduate or otherwise. The model can do this because we already have existing data on students who have and have not graduated, so our model can learn the performance indicators of those students. Based on the student's performance indicators, the model would output a weight for each performance indicator.</p>
-<p>With this in mind, the second step is predicting whether new students would graduate or otherwise. This time we do not have information on existing students whether they have graduated or not as they are still studying. However, we have a model that learned from previous batches of students who graduated. The new students performance indicators with their respective weights will be fed into our model and the model will output a probability and students will be classified according to whether they are "likely to graduate" or "unlikely to graduate". We can then take preventive measures on students who are unlikely to graduate.</p>
-<p>Moreover, if we would like to play it safe and ensure that we spot as many students as we can who are "unlikely to graduate", even if they may be "likely to graduate", we can increase our strictness in determining their likelihood of graduating, and spot more of them. This is because there is no harm in flagging a student who is "likely to graduate" as "unlikely to graduate". But there may be severe repercussions if we flag a student who is "unlikely to graduate" as "likely to graduate" and do not attend to the student.</p>
+The model I have created is able to predict how likely a student is to graduate. It does so by analysing the 395 that already went through the program. By looking at the attributes of these students, it identifies cues that have been idicative for failing to graduate in the past. We can look for these cues in future students to get our intervention system. To get a feeling for how the model works, consider the picture below. Image you record two attributes for your students:</p>
+<ul>
+<li>goout: how much they go out with friends (the higher the value, the more they tend to go out)</li>
+<li>failures: how often they failed to pass a class before (the higher the value, the more often they failed before)</li>
+</ul>
+<p>You would probably expect both numbers to drive the chance of failing to graduate. You could then verify this expectation by drawing a picture like the one below. For each student, you would draw a blue dot if he failed to graduate and a red dot if he did not. You would draw dots more to the right the higher the failures attribute value is and the more to the top the higher the goout attribute value is. If your expectation is correct, you would see more blue dots (= studentes failed to graduate) in the upper right corner of your picture. Looking at the picture, you indeed see more blue dots than red ones there. You could now draw a line through the picture to seperate two areas, one in which mostly blue dots are and another in which more red than blue dots are. In the picture, you can see an example of such a line. You now have two areas, one in which students are likely to fail to graduate and the other in which they are likely to pass. Drawing a line is what the model I've created for you does when it learns from data.</p>
+<p>If you see a new student now, then you can draw a new dot into the picture according to his failure and goout values and see where it the dot is. You would now check in which of the two areas the student is. Depending on that, you would either estimate he is likely to fail to graduate or not. The closer the dot is to the line, the less confident you will be about the prediction, i.e., you will assign higher probabilities to points far away from the line. To see why, check the dots in the picture. Close to the line, you have many blue and red dots on either side, so you cannot be sure. Deep inside the blue-shaded area though, most dots are blue. Similarly, deep inside the yellow-shaded area, most dots are red (exceptions exist of course). Checking on which side of the line a point is and how far it is away is what the model I've created for you does when it predicts the chance that a student fails to graduate.</p>
+<p>The reason you need the model and not just a picture is that the model does above described things mathematically and not in pictures, which is why it can look at more than just two attributes. If we were to look at, say, five attributes, we could not draw a picture anymore. The model however can perfectly work with the five attributes.</p>
+<p><img src="pic1.png"></p>
 
 </div>
 </div>
